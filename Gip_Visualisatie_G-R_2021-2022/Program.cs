@@ -20,7 +20,7 @@ namespace MyApp
                 //time shit pls
                 //fix bugz
                 //zap zap bugzapper
-                for (int i = 0; i < 64; i++)
+                /*for (int i = 0; i < 64; i++)
                 {
 
 
@@ -33,11 +33,11 @@ namespace MyApp
                 /*for (int i = 0; i < 10; i++)
                 {
                     ICE();
-                }*/
+                }
                 Animation(64, 132);
                 CaptinKurk();
                 Animation(132, 192);
-
+                */
                 Plc _S71200 = new Plc(CpuType.S71200, "192.168.2.11", 0, 1);
                 Console.WriteLine("Connecting");
                 _S71200.Open();
@@ -46,9 +46,19 @@ namespace MyApp
                 if (_S71200.IsConnected)
                 {
                     Console.Clear();
+                    
+
+
+                    bool sensor3 = false;
                     while (true)
                     {
-
+                        Console.SetCursorPosition(0, 0);
+                        for (int o = 0; o < 24; o++)
+                        {
+                            Console.WriteLine("                                                                                                                                                                                                     ");
+                        }
+                        Console.WriteLine("   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+", Color.White);
+                        Console.SetCursorPosition(0, 0);
                         bool DB0 = (bool)_S71200.Read("DB4.DBX0.0"); //noodstop
                         bool DB1 = (bool)_S71200.Read("DB4.DBX0.1"); //start sensor
                         bool DB2 = (bool)_S71200.Read("DB4.DBX0.2"); //fill sensor
@@ -58,61 +68,96 @@ namespace MyApp
                         
                         if (DB1)
                         {
-                            while(DB2 == false && DB0 == false && DB5)
+                            
+                            Console.Clear();
+                            while (DB2 == false && DB0  && DB5)
                             {
                                 for(int i = 0; i < 64; i++)
                                 {
                                     DB2 = (bool)_S71200.Read("DB4.DBX0.2");
                                     DB0 = (bool)_S71200.Read("DB4.DBX0.0");
+                                    DB5 = (bool)_S71200.Read("DB4.DBX0.5");
                                     Animation(i, (i + 1));
+                                    if(DB0 == false || DB2)
+                                    {
+                                        break;
+                                    }
                                 }
                                 
                             }
                         }
-                        if (DB2&& DB0 == false && DB5== false)
+                        if (DB2 && DB0 && DB5 == false)
                         {
-                            FullFill();
+                            while (DB2 && DB0 && DB5 == false)
+                            {
+                                DB2 = (bool)_S71200.Read("DB4.DBX0.2");
+                                DB0 = (bool)_S71200.Read("DB4.DBX0.0");
+                                DB5 = (bool)_S71200.Read("DB4.DBX0.5");
+                                FullFill();
+
+                            }
+                            Console.Clear();
                         }
-                        if(DB2 && DB0 == false && DB5)
+                        if (DB2 && DB0 && DB5)
                         {
-                            while (DB3 == false && DB0 == false && DB5)
+                            
+                            while (DB3 == false && DB0 && DB5)
                             {
                                 for (int i = 64; i < 132; i++)
                                 {
                                     DB3 = (bool)_S71200.Read("DB4.DBX0.3");
                                     DB0 = (bool)_S71200.Read("DB4.DBX0.0");
+                                    DB5 = (bool)_S71200.Read("DB4.DBX0.5");
                                     Animation(i, (i + 1));
+                                    if (DB0 == false || DB3)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         }
-                        if (DB3 && DB0 == false && DB5 == false)
+                        if (DB3 && DB0 && DB5 == false && sensor3 == false)
                         {
                             CaptinKurk();
+                            sensor3 = true;
                         }
-                        if (DB3 && DB0 == false && DB5)
+                        if (sensor3 && DB0)
                         {
-                            while (DB4 == false && DB0 == false && DB5)
+                            
+                            while (DB4 == false && DB0&& DB5)
                             {
                                 for (int i = 132; i < 192; i++)
                                 {
                                     DB4 = (bool)_S71200.Read("DB4.DBX0.4");
                                     DB0 = (bool)_S71200.Read("DB4.DBX0.0");
+                                    DB5 = (bool)_S71200.Read("DB4.DBX0.5");
                                     Animation(i, (i + 1));
+                                    if (DB0 == false || DB4)
+                                    {
+                                        sensor3 = false;
+                                        break;
+                                    }
                                 }
                             }
                         }
                         if (DB4)
                         {
-                            while (DB4 && DB0 == false)
+                            while (DB4 && DB0)
                             {
                                 DB4 = (bool)_S71200.Read("DB4.DBX0.4");
                                 DB0 = (bool)_S71200.Read("DB4.DBX0.0");
-                                Animation(192, 192);
+                                Animation(192, 193);
                             }
+                            Console.Clear();
                         }
-                        while (DB0)
+                        while (DB0 == false)
                         {
                             ICE();
+                            DB0 = (bool)_S71200.Read("DB4.DBX0.0");
+                            if (DB0)
+                            {
+                                break;
+                            }
                         }
 
 
@@ -139,8 +184,8 @@ namespace MyApp
         }
         static void FullFill()
         {
-            Console.Clear();
-            for(int i = 0; i < 50; i++)
+            
+            for(int i = 0; i < 2; i++)
             {
                 Console.SetCursorPosition(0, 0);
 
@@ -184,7 +229,6 @@ namespace MyApp
                 Console.WriteLine("   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+", Color.White);
                 Thread.Sleep(100);
             }
-            Console.Clear();
 
         }
         static void CaptinKurk()
@@ -238,7 +282,7 @@ namespace MyApp
                 Console.WriteLine("   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+", Color.White);
                 Thread.Sleep(100);
             }
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Console.SetCursorPosition(0, 0);
 
@@ -300,7 +344,6 @@ namespace MyApp
                 {
                     Console.WriteLine();
                 }
-
                 Console.OutputEncoding = System.Text.Encoding.Unicode;
                 var margin = "".PadLeft(j);
                 if (j >= 132)
@@ -335,7 +378,19 @@ namespace MyApp
                 Console.WriteLine(margin + " |_____|", Color.Green);
                 Console.WriteLine("   +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+[" + "\x1B[4m" + "\"\"\"\"\"" + "\x1B[0m" + "]+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+", Color.White);
 
-                Thread.Sleep(100);
+                if (j == 63 || j == 131)
+                {
+                    Console.SetCursorPosition(0, 0);
+                    for (int o = 0; o < 24; o++)
+                    {
+                        Console.WriteLine(margin + "                       ");
+                    }
+                }
+                if (j == 191)
+                {
+                    Console.Clear();
+                }
+                Thread.Sleep(10);
 
                 //0-45,45-96,96-135
             }
